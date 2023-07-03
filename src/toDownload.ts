@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import { toAuth } from "./toAuth";
+import { toUpload } from "./toUpload";
 import * as path from 'path';
 
 async function createFolderRecursive(parentId: string, folderPath: string) {
