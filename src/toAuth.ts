@@ -1,6 +1,6 @@
 import { drive_v3, google } from 'googleapis';
 import { JWT } from 'google-auth-library';
-import { credentials } from './configs/google.api';
+import { credentials  } from './configs/google.api';
 
 const SCOPES = [
   'https://www.googleapis.com/auth/drive',

@@ -1,28 +1,29 @@
 import * as path from "path";
 import { folders } from "./configs/google.folders";
 import { genToken } from "./genToken";
-import { toDownload } from "./toDownload";
-import { toListen } from "./toListen";
+import { downloadFolder } from "./toDownload";
+import { toListen, drivesList } from "./toListen";
 import { toUpload } from "./toUpload";
-
-const FILE_EXTENSION = 'jpeg'
+import { toRealocation } from "./toRealocation";
+import { toCopy } from "./toCopy";
 
 export const orchestrator = async () => {
   await genToken();
 
-  const files = await toListen(folders.DRIVE_TEST);
-
-  const filterFiles = files.filter(value => value.fileExtension === FILE_EXTENSION);
-
-  for await (const file of filterFiles) {
-    await toDownload(file.id, file.name);
-  }
+  const [jobs, jobsTwo, jobsThree] = await toListen();
   
-  for await (const file of filterFiles) {
-    await toUpload({
-      fileName: file.name,
-      filePath: path.join('download', file.name),
-      folderId: folders.DRIVE_TEST_UPLOAD
-    })
+  for await (const folder of jobsThree) {
+    if (folder.name[0] !== '_') {
+      await downloadFolder(folder.id, 'download', drivesList._JOBS_2023, folder.name);
+    }
   }
+
+  /*
+  for await (const folder of jobsTwo) {
+    if (folder.name[0] !== '_') {
+      console.log(`Client: ${folder.name} de Id: ${folder.id}`);
+      await downloadFolder(folder.id, 'download', drivesList._JOBS_2022);
+    }
+  }
+  */
 };
