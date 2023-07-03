@@ -20,8 +20,7 @@ export const orchestrator = async () => {
 
   for await (const folder of jobsTwo) {
     if (folder.name[0] !== '_') {
-      console.log(`Client: ${folder.name} de Id: ${folder.id}`);
-      await downloadFolder(folder.id, 'download', drivesList._JOBS_2022);
+      await downloadFolder(folder.id, 'download', drivesList._JOBS_2022, folder.name);
     }
   }  
 };
