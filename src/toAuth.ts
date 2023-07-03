@@ -9,6 +9,7 @@ const SCOPES = [
   'https://www.googleapis.com/auth/drive.scripts',
   'https://www.googleapis.com/auth/drive.metadata',
 ];
+
 const TOKEN_PATH = 'token.json';
 
 export const toAuth = async (): Promise<drive_v3.Drive> => {
