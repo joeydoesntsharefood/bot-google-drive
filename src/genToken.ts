@@ -1,5 +1,6 @@
 import { JWT } from 'google-auth-library';
 import { credentials } from './configs/google.api';
+import { writeFileSync } from 'fs';
 
 const SCOPES = ['https://www.googleapis.com/auth/drive.readonly'];
 const TOKEN_PATH = 'token.json';
@@ -17,7 +18,7 @@ export const genToken = async () => {
 
     if (accessToken) {
       const tokenString = `"${accessToken}"`;
-      require('fs').writeFileSync(TOKEN_PATH, tokenString);
+      writeFileSync(TOKEN_PATH, tokenString);
       console.log('Token de acesso gerado com sucesso!');
     } else {
       console.error('Falha ao gerar o token de acesso.');

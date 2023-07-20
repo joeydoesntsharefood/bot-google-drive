@@ -1,4 +1,5 @@
 import { toAuth } from './toAuth';
+import { createReadStream } from 'fs';
 
 interface Props {
   fileName: string;
@@ -17,7 +18,7 @@ export const toUpload = async ({ fileName, filePath, folderId }: Props) => {
 
     const media = {
       mimeType: 'application/octet-stream',
-      body: require('fs').createReadStream(filePath),
+      body: createReadStream(filePath),
     };
 
     const response = await drive.files.create({
