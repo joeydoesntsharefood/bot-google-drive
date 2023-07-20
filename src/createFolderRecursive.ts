@@ -1,8 +1,11 @@
-import { toAuth } from "./toAuth";
+import { toAuth } from './toAuth';
 
-export const createFolderRecursive = async (parentId: string, folderPath: string) => {
+export const createFolderRecursive = async (
+  parentId: string,
+  folderPath: string,
+) => {
   const drive = await toAuth();
-   
+
   const folderNames = folderPath.split('/');
   let currentFolderId = parentId;
 
@@ -33,5 +36,4 @@ export const createFolderRecursive = async (parentId: string, folderPath: string
   }
 
   return currentFolderId;
-}
-
+};

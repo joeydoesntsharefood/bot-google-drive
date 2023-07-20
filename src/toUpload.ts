@@ -1,9 +1,9 @@
-import { toAuth } from "./toAuth";
+import { toAuth } from './toAuth';
 
 interface Props {
-  fileName: string
-  folderId: string
-  filePath: string
+  fileName: string;
+  folderId: string;
+  filePath: string;
 }
 
 export const toUpload = async ({ fileName, filePath, folderId }: Props) => {

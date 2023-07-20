@@ -1,9 +1,5 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { toListen } from './toListen';
-import { folders } from './configs/google.folders';
-  import { genToken } from './genToken';
-import { toUpload } from './toUpload';
 import { orchestrator } from './orchestrator';
 
 async function bootstrap() {
@@ -13,7 +9,7 @@ async function bootstrap() {
 
   await app.listen(3000);
 
-  await orchestrator()
+  await orchestrator();
 }
 
 bootstrap();

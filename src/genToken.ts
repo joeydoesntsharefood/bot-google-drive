@@ -1,4 +1,3 @@
-import { google } from 'googleapis';
 import { JWT } from 'google-auth-library';
 import { credentials } from './configs/google.api';
 
@@ -26,4 +25,4 @@ export const genToken = async () => {
   } catch (error) {
     console.error('Ocorreu um erro:', error);
   }
-}
+};

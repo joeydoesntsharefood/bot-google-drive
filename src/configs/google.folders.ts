@@ -1,10 +1,10 @@
-const DRIVE_UPLOAD = "0ALLEXn5U2V9TUk9PVA";
-const DRIVE_JOBS = "0AIeO0_u-HWo-Uk9PVA";
-const DRIVE_JOBS_2022 = "0AN6yFIGWA7BwUk9PVA";
-const DRIVE_JOBS_2023 = "0AAMenQGp1kxlUk9PVA";
-const DRIVE_TEST = "1KQngNo0koSeqlqipWhDPKRsfcKfsC1VP";
-const DRIVE_TEST_UPLOAD = "1yq8j9kgPwBKVwk23tUgYjb8kcr1hHnEa";
-const DRIVE_TESTE_FOLDER = "1_MHSqP5_wZBxKBRGWz5h9i3W_BuWNw4D";
+const DRIVE_UPLOAD = '0ALLEXn5U2V9TUk9PVA';
+const DRIVE_JOBS = '0AIeO0_u-HWo-Uk9PVA';
+const DRIVE_JOBS_2022 = '0AN6yFIGWA7BwUk9PVA';
+const DRIVE_JOBS_2023 = '0AAMenQGp1kxlUk9PVA';
+const DRIVE_TEST = '1KQngNo0koSeqlqipWhDPKRsfcKfsC1VP';
+const DRIVE_TEST_UPLOAD = '1yq8j9kgPwBKVwk23tUgYjb8kcr1hHnEa';
+const DRIVE_TESTE_FOLDER = '1_MHSqP5_wZBxKBRGWz5h9i3W_BuWNw4D';
 
 export const folders = {
   DRIVE_UPLOAD,
@@ -14,4 +14,4 @@ export const folders = {
   DRIVE_TEST,
   DRIVE_TEST_UPLOAD,
   DRIVE_TESTE_FOLDER,
-}
+};
