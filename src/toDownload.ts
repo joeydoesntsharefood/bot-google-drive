@@ -3,6 +3,7 @@ import { toAuth } from './toAuth';
 import { toUpload } from './toUpload';
 import * as path from 'path';
 import { createFolderRecursive } from './createFolderRecursive';
+import { toDelete } from './toDelete';
 
 const downloadFile = async (
   fileId: string,
@@ -40,12 +41,17 @@ const downloadFile = async (
   }
 };
 
-export const downloadFolder = async (
-  folderId: string,
-  downloadDir: string,
-  driveId: string,
-  clientName: string,
-) => {
+export const downloadFolder = async ({
+  clientName,
+  driveId,
+  driveUploadId,
+  folderId,
+}: {
+  folderId: string;
+  driveId: string;
+  clientName: string;
+  driveUploadId: string;
+}) => {
   try {
     const drive = await toAuth();
 
@@ -118,36 +124,42 @@ export const downloadFolder = async (
 
             const filesImages = res.data.files;
 
-            for await (const image of filesImages) {
-              let folderIdUpload = '';
-              const uploadFolder = `${clientName}/${folder.name}/${imgs.name}/${version.name}/${image.name}`;
+            if (filesImages.length === 0) console.log('Pasta vazia.');
+            else {
+              for await (const image of filesImages) {
+                let folderIdUpload = '';
+                const uploadFolder = `${clientName}/${folder.name}/${imgs.name}/${version.name}`;
 
-              await downloadFile(image.id, './download', image.name)
-                .then(() => {
-                  console.log('Download concluído com sucesso!');
-                })
-                .catch((error) => {
-                  console.error('Ocorreu um erro durante o download:', error);
-                });
+                await downloadFile(image.id, './download', image.name)
+                  .then(() => {
+                    console.log('Download concluído com sucesso!');
+                  })
+                  .catch((error) => {
+                    console.error('Ocorreu um erro durante o download:', error);
+                  });
 
-              await createFolderRecursive(driveId, uploadFolder)
-                .then((folderId) => {
-                  console.log('Pasta criada com sucesso. ID:', folderId);
-                  folderIdUpload = folderId;
-                })
-                .catch((error) => {
-                  console.error(
-                    'Ocorreu um erro ao criar a pasta:',
-                    error?.errors?.[0]?.message ?? 'Não definido',
-                  );
-                });
+                await createFolderRecursive(driveUploadId, uploadFolder)
+                  .then((folderId) => {
+                    console.log('Pasta criada com sucesso. ID:', folderId);
+                    folderIdUpload = folderId;
+                  })
+                  .catch((error) => {
+                    console.error(
+                      'Ocorreu um erro ao criar a pasta:',
+                      error?.errors?.[0] ?? 'Não definido',
+                    );
 
-              if (folderIdUpload.length !== 0)
-                await toUpload({
-                  fileName: image.name,
-                  folderId: folderIdUpload,
-                  filePath: './download',
-                });
+                    toDelete(`./download/${image.name}`, image.name);
+                  });
+
+                if (folderIdUpload.length !== 0) {
+                  await toUpload({
+                    fileName: image.name,
+                    folderId: folderIdUpload,
+                    filePath: `./download/${image.name}`,
+                  });
+                }
+              }
             }
           }
         }

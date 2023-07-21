@@ -5,6 +5,8 @@ const DRIVE_JOBS_2023 = '0AAMenQGp1kxlUk9PVA';
 const DRIVE_TEST = '1KQngNo0koSeqlqipWhDPKRsfcKfsC1VP';
 const DRIVE_TEST_UPLOAD = '1yq8j9kgPwBKVwk23tUgYjb8kcr1hHnEa';
 const DRIVE_TESTE_FOLDER = '1_MHSqP5_wZBxKBRGWz5h9i3W_BuWNw4D';
+const DRIVE_PUB_MODELS = '0ALLEXn5U2V9TUk9PVA';
+const DRIVE_PINTEREST_JOBS = '1x80phq8RmvCij5hmzl7l5KeL7IN1EcKU';
 
 export const folders = {
   DRIVE_UPLOAD,
@@ -14,4 +16,6 @@ export const folders = {
   DRIVE_TEST,
   DRIVE_TEST_UPLOAD,
   DRIVE_TESTE_FOLDER,
+  DRIVE_PUB_MODELS,
+  DRIVE_PINTEREST_JOBS,
 };

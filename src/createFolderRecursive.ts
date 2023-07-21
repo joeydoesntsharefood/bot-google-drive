@@ -6,6 +6,9 @@ export const createFolderRecursive = async (
 ) => {
   const drive = await toAuth();
 
+  console.log('Pasta Pai:', parentId);
+  console.log('Caminho a ser criado:', folderPath);
+
   const folderNames = folderPath.split('/');
   let currentFolderId = parentId;
 
@@ -13,13 +16,12 @@ export const createFolderRecursive = async (
     const existingFolder = await drive.files.list({
       q: `name='${folderName}' and mimeType='application/vnd.google-apps.folder' and '${currentFolderId}' in parents`,
       fields: 'files(id)',
+      supportsAllDrives: true,
     });
 
     if (existingFolder.data.files && existingFolder.data.files.length > 0) {
-      // A pasta já existe, atualiza o ID da pasta atual
       currentFolderId = existingFolder.data.files[0].id;
     } else {
-      // Cria a nova pasta
       const folderMetadata = {
         name: folderName,
         mimeType: 'application/vnd.google-apps.folder',
@@ -29,6 +31,7 @@ export const createFolderRecursive = async (
       const response = await drive.files.create({
         requestBody: folderMetadata,
         fields: 'id',
+        supportsAllDrives: true,
       });
 
       currentFolderId = response.data?.id || '';
