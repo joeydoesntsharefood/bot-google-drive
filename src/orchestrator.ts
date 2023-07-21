@@ -8,19 +8,22 @@ const folderTest = {
   jobsThree: '1jHbhgcMCAld0VEjJVhD10MuT_XQh6_vM',
 };
 
-export const orchestrator = async () => {
+export const orchestrator = async (server: any) => {
   await genToken();
+
+  server('Iniciando');
 
   const [, jobsTwo, jobsThree] = await toListen();
 
   for await (const folder of jobsTwo) {
     if (folder.name[0] !== '_') {
       await downloadFolder({
+        server,
         folderId: folder.id,
         driveId: drivesList._JOBS_2022,
         clientName: folder.name,
-        driveUploadId: '1xLjV4rMKjr0BdI9QmoDnYl1MDrD-HDaE',
-        // driveUploadId: folderTest.jobsTwo,
+        // driveUploadId: '1xLjV4rMKjr0BdI9QmoDnYl1MDrD-HDaE',
+        driveUploadId: folderTest.jobsTwo,
       });
     }
   }
@@ -28,11 +31,12 @@ export const orchestrator = async () => {
   for await (const folder of jobsThree) {
     if (folder.name[0] !== '_') {
       await downloadFolder({
+        server,
         folderId: folder.id,
         driveId: drivesList._JOBS_2023,
         clientName: folder.name,
-        driveUploadId: '1xPMRFLpTzyA_I88W9z2ZPYXadXYyle-n',
-        // driveUploadId: folderTest.jobsThree,
+        // driveUploadId: '1xPMRFLpTzyA_I88W9z2ZPYXadXYyle-n',
+        driveUploadId: folderTest.jobsThree,
       });
     }
   }

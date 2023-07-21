@@ -6,10 +6,11 @@ interface Props {
   fileName: string;
   folderId: string;
   filePath: string;
+  server: any;
 }
 
 export const toUpload = async (props: Props) => {
-  const { fileName, filePath, folderId } = props;
+  const { fileName, filePath, folderId, server } = props;
 
   try {
     const drive = await toAuth();
@@ -30,6 +31,7 @@ export const toUpload = async (props: Props) => {
     });
 
     console.log('Arquivo enviado com sucesso!');
+    server(`Arquivo enviado com sucesso ${fileName}`);
     console.log('ID do arquivo:', response.data.id);
     toDelete(`./download/${fileName}`, fileName);
   } catch (err: any) {

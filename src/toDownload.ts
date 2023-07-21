@@ -42,11 +42,13 @@ const downloadFile = async (
 };
 
 export const downloadFolder = async ({
+  server,
   clientName,
   driveId,
   driveUploadId,
   folderId,
 }: {
+  server: any;
   folderId: string;
   driveId: string;
   clientName: string;
@@ -54,6 +56,9 @@ export const downloadFolder = async ({
 }) => {
   try {
     const drive = await toAuth();
+
+    server(`Client: ${clientName}`);
+    console.log('Client:', clientName);
 
     const res = await drive.files.list({
       driveId,
@@ -70,9 +75,11 @@ export const downloadFolder = async ({
     const filterFiles = res.data.files.filter((value) => value.name[0] !== '_');
 
     if (filterFiles.length === 0) {
+      server('Não possui arquivos para serem baixados');
       console.log('Não possui arquivos para serem baixados');
     } else {
       for await (const folder of filterFiles) {
+        server(`Project: ${folder.name}`);
         console.log('Project: ', folder.name);
         const res = await drive.files.list({
           driveId,
@@ -124,17 +131,25 @@ export const downloadFolder = async ({
 
             const filesImages = res.data.files;
 
-            if (filesImages.length === 0) console.log('Pasta vazia.');
-            else {
+            if (filesImages.length === 0) {
+              server('Pasta vazia.');
+              console.log('Pasta vazia.');
+            } else {
               for await (const image of filesImages) {
                 let folderIdUpload = '';
                 const uploadFolder = `${clientName}/${folder.name}/${imgs.name}/${version.name}`;
 
                 await downloadFile(image.id, './download', image.name)
                   .then(() => {
+                    server(
+                      `Download concluído com sucesso do arquivo: ${image.name}`,
+                    );
                     console.log('Download concluído com sucesso!');
                   })
                   .catch((error) => {
+                    server(
+                      `Ocorreu um erro durante o download do arquivo: ${image.name}`,
+                    );
                     console.error('Ocorreu um erro durante o download:', error);
                   });
 
@@ -154,6 +169,7 @@ export const downloadFolder = async ({
 
                 if (folderIdUpload.length !== 0) {
                   await toUpload({
+                    server,
                     fileName: image.name,
                     folderId: folderIdUpload,
                     filePath: `./download/${image.name}`,
