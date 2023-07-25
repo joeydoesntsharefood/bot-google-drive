@@ -13,10 +13,13 @@ export const createFolderRecursive = async (
   let currentFolderId = parentId;
 
   for (const folderName of folderNames) {
+    const q = `name='${folderName}' and mimeType='application/vnd.google-apps.folder' and '${currentFolderId}' in parents`;
+
     const existingFolder = await drive.files.list({
-      q: `name='${folderName}' and mimeType='application/vnd.google-apps.folder' and '${currentFolderId}' in parents`,
-      fields: 'files(id)',
-      supportsAllDrives: true,
+      q,
+      fields: 'files(id, mimeType, parents)',
+      supportsTeamDrives: true,
+      includeTeamDriveItems: true,
     });
 
     if (existingFolder.data.files && existingFolder.data.files.length > 0) {

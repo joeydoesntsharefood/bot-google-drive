@@ -18,8 +18,15 @@ export class AppGateway
   private logger: Logger = new Logger('AppGateway');
 
   @SubscribeMessage('msgToServer')
-  handleMessage(client: Socket, payload: string): void {
-    this.server.emit('msgToClient', payload, client.id);
+  async handleMessage(client: Socket, payload: string) {
+    if (payload === 'restart') {
+      await orchestrator((value: string) =>
+        this.server.emit('msgToClient', value),
+      );
+
+      this.logger.log('Restart');
+      this.server.emit('msgToClient', 'Restart bot');
+    }
   }
 
   async afterInit(server: any) {

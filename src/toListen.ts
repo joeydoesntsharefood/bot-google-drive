@@ -20,10 +20,20 @@ export const toListen = async () => {
       pageSize: 1000,
     };
 
+    const filesJOBSZero = await drive.files.list({
+      q: `mimeType='application/vnd.google-apps.folder' and '1ET5n40JNBpbNNlYgIAzo1oInBMY7M23V' in parents`,
+      fields: 'files(id, mimeType, parents, name)',
+      supportsTeamDrives: true,
+      includeTeamDriveItems: true,
+    });
+
+    const JOBS_FILES_ZERO = filesJOBSZero.data.files;
+
     const filesJOBS = await drive.files.list({
-      ...baseParams,
-      driveId: drivesList._JOBS,
-      q: `'${drivesList._JOBS}' in parents`,
+      q: `mimeType='application/vnd.google-apps.folder' and '1dlAvU34FY5jZLlumQkgJyJo-3eLCQ9Fb' in parents`,
+      fields: 'files(id, mimeType, parents, name)',
+      supportsTeamDrives: true,
+      includeTeamDriveItems: true,
     });
 
     const JOBS_FILES = filesJOBS.data.files;
@@ -44,7 +54,7 @@ export const toListen = async () => {
 
     const JOBS_THREE_FILES = filesJOBSThree.data.files;
 
-    return [JOBS_FILES, JOBS_TWO_FILES, JOBS_THREE_FILES];
+    return [JOBS_FILES_ZERO, JOBS_FILES, JOBS_TWO_FILES, JOBS_THREE_FILES];
   } catch (err: any) {
     console.log('[Listen]Ocorreu um erro: ', err);
   }

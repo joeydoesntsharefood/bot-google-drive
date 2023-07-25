@@ -4,6 +4,7 @@ import { toUpload } from './toUpload';
 import * as path from 'path';
 import { createFolderRecursive } from './createFolderRecursive';
 import { toDelete } from './toDelete';
+import { genToken } from './genToken';
 
 const downloadFile = async (
   fileId: string,
@@ -47,12 +48,14 @@ export const downloadFolder = async ({
   driveId,
   driveUploadId,
   folderId,
+  driveName,
 }: {
   server: any;
   folderId: string;
   driveId: string;
   clientName: string;
   driveUploadId: string;
+  driveName: string;
 }) => {
   try {
     const drive = await toAuth();
@@ -95,6 +98,7 @@ export const downloadFolder = async ({
 
         const imgs = res.data.files.find(
           (value) => value.name === '06_IMAGENS',
+          // (value) => value.name === '07_VIDEO',
         );
 
         if (imgs) {
@@ -125,7 +129,8 @@ export const downloadFolder = async ({
               supportsTeamDrives: true,
               orderBy: 'name',
               pageSize: 1000,
-              q: `'${version.id}' in parents and mimeType = "image/jpeg"`,
+              q: `'${version.id}' in parents and mimeType = "image/jpeg" or mimeType = "image/png"`,
+              // q: `'${version.id}' in parents and mimeType = "video/mp4"`,
               fields: 'files(id, name, mimeType)',
             });
 
@@ -133,10 +138,11 @@ export const downloadFolder = async ({
 
             if (filesImages.length === 0) {
               server('Pasta vazia.');
-              console.log('Pasta vazia.');
             } else {
+              await genToken();
               for await (const image of filesImages) {
                 let folderIdUpload = '';
+                // const uploadFolder = `${driveName}/${clientName}/${folder.name}/${imgs.name}/${version.name}`;
                 const uploadFolder = `${clientName}/${folder.name}/${imgs.name}/${version.name}`;
 
                 await downloadFile(image.id, './download', image.name)

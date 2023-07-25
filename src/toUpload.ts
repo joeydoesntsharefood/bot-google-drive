@@ -28,6 +28,7 @@ export const toUpload = async (props: Props) => {
     const response = await drive.files.create({
       requestBody: fileMetadata,
       media: media,
+      supportsTeamDrives: true,
     });
 
     console.log('Arquivo enviado com sucesso!');
