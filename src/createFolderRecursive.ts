@@ -35,6 +35,7 @@ export const createFolderRecursive = async (
         requestBody: folderMetadata,
         fields: 'id',
         supportsAllDrives: true,
+        supportsTeamDrives: true,
       });
 
       currentFolderId = response.data?.id || '';
