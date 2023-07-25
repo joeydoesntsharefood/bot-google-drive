@@ -5,6 +5,11 @@ import * as path from 'path';
 import { createFolderRecursive } from './createFolderRecursive';
 import { toDelete } from './toDelete';
 import { genToken } from './genToken';
+import {
+  anyonePermission,
+  nobodyPermission,
+  toPermissions,
+} from './toPermissions';
 
 const downloadFile = async (
   fileId: string,

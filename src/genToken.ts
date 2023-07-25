@@ -2,12 +2,7 @@ import { JWT } from 'google-auth-library';
 import { credentials } from './configs/google.api';
 import { writeFileSync } from 'fs';
 
-const SCOPES = [
-  'https://www.googleapis.com/auth/drive.readonly',
-  'https://www.googleapis.com/auth/drive.appdata',
-  'https://www.googleapis.com/auth/drive.file',
-  'https://www.googleapis.com/auth/drive.metadata',
-];
+const SCOPES = ['https://www.googleapis.com/auth/drive'];
 const TOKEN_PATH = 'token.json';
 
 export const genToken = async () => {
@@ -19,6 +14,7 @@ export const genToken = async () => {
     });
 
     const token = await client.getAccessToken();
+
     const accessToken = token?.token;
 
     if (accessToken) {
