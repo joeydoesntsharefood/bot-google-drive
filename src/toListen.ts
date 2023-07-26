@@ -1,5 +1,12 @@
 import { toAuth } from './toAuth';
 
+const folderListVideos = {
+  zero: '1ZpieLGljwxEIH_K2bYDOKsbCdwBgckAQ',
+  one: '',
+  two: '',
+  three: '',
+};
+
 export const drivesList = {
   _JOBS_2022: '0AN6yFIGWA7BwUk9PVA',
   _JOBS_2023: '0AAMenQGp1kxlUk9PVA',

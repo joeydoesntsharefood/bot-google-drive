@@ -5,11 +5,7 @@ import * as path from 'path';
 import { createFolderRecursive } from './createFolderRecursive';
 import { toDelete } from './toDelete';
 import { genToken } from './genToken';
-import {
-  anyonePermission,
-  nobodyPermission,
-  toPermissions,
-} from './toPermissions';
+import { toWatch } from './toWatch';
 
 const downloadFile = async (
   fileId: string,
@@ -53,14 +49,12 @@ export const downloadFolder = async ({
   driveId,
   driveUploadId,
   folderId,
-  driveName,
 }: {
   server: any;
   folderId: string;
   driveId: string;
   clientName: string;
   driveUploadId: string;
-  driveName: string;
 }) => {
   try {
     const drive = await toAuth();
@@ -101,13 +95,13 @@ export const downloadFolder = async ({
           fields: 'files(id, name, mimeType)',
         });
 
-        const imgs = res.data.files.find(
-          (value) => value.name === '06_IMAGENS',
-          // (value) => value.name === '07_VIDEO',
-        );
+        const folderType = '07_VIDEO';
+        // const folderType = '06_IMAGENS';
+
+        const imgs = res.data.files.find((value) => value.name === folderType);
 
         if (imgs) {
-          console.log(imgs.name);
+          console.log('Tipo de arquivo: ', imgs.name);
           const res = await drive.files.list({
             driveId,
             corpora: 'drive',
@@ -125,7 +119,13 @@ export const downloadFolder = async ({
           );
 
           for await (const version of versions) {
-            console.log(version.name);
+            const versionQuery = `'${version.id}' in parents and mimeType = "video/mp4" and mimeType = "video/avi" and mimeType = "video/mov"`;
+            // const versionQuery = `'${version.id}' in parents and mimeType = "image/jpeg" or mimeType = "image/png"`;
+
+            console.log('Pasta de versão', version.name);
+
+            // await toWatch({ folderId: version.id, webhookUrl: '' });
+
             const res = await drive.files.list({
               driveId,
               corpora: 'drive',
@@ -134,17 +134,16 @@ export const downloadFolder = async ({
               supportsTeamDrives: true,
               orderBy: 'name',
               pageSize: 1000,
-              q: `'${version.id}' in parents and mimeType = "image/jpeg" or mimeType = "image/png"`,
-              // q: `'${version.id}' in parents and mimeType = "video/mp4"`,
+              q: versionQuery,
               fields: 'files(id, name, mimeType)',
             });
 
             const filesImages = res.data.files;
 
             if (filesImages.length === 0) {
+              console.log('Pasta vazia.');
               server('Pasta vazia.');
             } else {
-              await genToken();
               for await (const image of filesImages) {
                 let folderIdUpload = '';
                 // const uploadFolder = `${driveName}/${clientName}/${folder.name}/${imgs.name}/${version.name}`;

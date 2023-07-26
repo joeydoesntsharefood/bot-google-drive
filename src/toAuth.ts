@@ -1,5 +1,5 @@
 import { drive_v3, google } from 'googleapis';
-import { JWT } from 'google-auth-library';
+import { Credentials, JWT } from 'google-auth-library';
 import { credentials } from './configs/google.api';
 
 const SCOPES = [
@@ -25,6 +25,13 @@ export const toAuth = async (): Promise<drive_v3.Drive> => {
 
     client.setCredentials({
       access_token: token,
+    });
+
+    client.on('tokens', (tokens: Credentials) => {
+      client.setCredentials({
+        refresh_token: tokens.refresh_token,
+      });
+      console.log('Catch refresh token');
     });
 
     return google.drive({ version: 'v3', auth: client });
