@@ -1,6 +1,7 @@
-import { genToken } from './genToken';
 import { downloadFolder } from './toDownload';
 import { toListen, drivesList } from './toListen';
+import { toAuth } from './toAuth';
+import { genToken } from './genToken';
 
 const uploadVideoId = {
   zero: '1ZpieLGljwxEIH_K2bYDOKsbCdwBgckAQ',
@@ -14,23 +15,28 @@ export const orchestrator = async (server: any) => {
 
   const [zero, jobs, jobsTwo, jobsThree] = await toListen();
 
-  console.log('Rodando 2020');
+  console.log(
+    'Rodando 2020------------------------------------------------------------------------------------------',
+  );
   server('Rodando 2020');
 
-  for await (const folder of zero) {
-    if (folder.name[0] !== '_') {
-      await downloadFolder({
-        server,
-        folderId: folder.id,
-        driveId: drivesList._JOBS,
-        clientName: folder.name,
-        // driveUploadId: '1xJW6zqjtO1Rlsd8kIfJTHeT1BcVQg4AA',
-        driveUploadId: uploadVideoId.zero,
-      });
-    }
-  }
+  // for await (const folder of zero) {
+  //   if (folder.name[0] !== '_') {
+  //     console.log(folder.name);
 
-  console.log('Rodando 2021');
+  //     await downloadFolder({
+  //       server,
+  //       folderId: folder.id,
+  //       driveId: drivesList._JOBS,
+  //       clientName: folder.name,
+  //       driveUploadId: uploadVideoId.zero,
+  //     });
+  //   }
+  // }
+
+  console.log(
+    'Rodando 2021------------------------------------------------------------------------------------------',
+  );
   server('Rodando 2021');
 
   for await (const folder of jobs) {
@@ -40,13 +46,14 @@ export const orchestrator = async (server: any) => {
         folderId: folder.id,
         driveId: drivesList._JOBS_2022,
         clientName: folder.name,
-        // driveUploadId: '1xLtHMhW6aLFrdwQBFoubHs56fLConMrL',
         driveUploadId: uploadVideoId.one,
       });
     }
   }
 
-  console.log('Rodando 2022');
+  console.log(
+    'Rodando 2022------------------------------------------------------------------------------------------',
+  );
   server('Rodando 2022');
 
   for await (const folder of jobsTwo) {
@@ -56,13 +63,14 @@ export const orchestrator = async (server: any) => {
         folderId: folder.id,
         driveId: drivesList._JOBS_2022,
         clientName: folder.name,
-        // driveUploadId: '1xLjV4rMKjr0BdI9QmoDnYl1MDrD-HDaE',
         driveUploadId: uploadVideoId.two,
       });
     }
   }
 
-  console.log('Rodando 2023');
+  console.log(
+    'Rodando 2023------------------------------------------------------------------------------------------',
+  );
   server('Rodando 2023');
 
   for await (const folder of jobsThree) {
@@ -72,7 +80,6 @@ export const orchestrator = async (server: any) => {
         folderId: folder.id,
         driveId: drivesList._JOBS_2023,
         clientName: folder.name,
-        // driveUploadId: '1xLjV4rMKjr0BdI9QmoDnYl1MDrD-HDaE',
         driveUploadId: uploadVideoId.three,
       });
     }

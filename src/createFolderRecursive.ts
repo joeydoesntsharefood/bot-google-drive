@@ -1,8 +1,10 @@
+import { drive_v3 } from 'googleapis';
 import { toAuth } from './toAuth';
 
 export const createFolderRecursive = async (
   parentId: string,
   folderPath: string,
+  // drive: drive_v3.Drive,
 ) => {
   const drive = await toAuth();
 

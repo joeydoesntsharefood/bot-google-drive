@@ -1,16 +1,15 @@
 import * as fs from 'fs';
 import { toAuth } from './toAuth';
-import { toUpload } from './toUpload';
 import * as path from 'path';
-import { createFolderRecursive } from './createFolderRecursive';
-import { toDelete } from './toDelete';
-import { genToken } from './genToken';
-import { toWatch } from './toWatch';
+import { toMove } from './toMove';
+import { drive_v3 } from 'googleapis';
+import { auth } from 'google-auth-library';
 
-const downloadFile = async (
+export const downloadFile = async (
   fileId: string,
   outputPath: string,
   fileName: string,
+  // drive: drive_v3.Drive,
 ) => {
   try {
     const drive = await toAuth();
@@ -32,6 +31,17 @@ const downloadFile = async (
     }
 
     const dest = fs.createWriteStream(outputFilePath);
+
+    const fileSize = parseInt(res.headers['content-length'] || '0', 10);
+
+    let downloadedBytes = 0;
+
+    res.data.on('data', (chunk: Buffer) => {
+      downloadedBytes += chunk.length;
+      const progress = ((downloadedBytes / fileSize) * 100).toFixed(2);
+      process.stdout.write(`Progresso do download: ${progress}%\r`);
+    });
+
     res.data.pipe(dest);
 
     return new Promise<void>((resolve, reject) => {
@@ -49,15 +59,19 @@ export const downloadFolder = async ({
   driveId,
   driveUploadId,
   folderId,
-}: {
+}: // drive,
+{
   server: any;
   folderId: string;
   driveId: string;
   clientName: string;
   driveUploadId: string;
+  // drive: drive_v3.Drive;
 }) => {
   try {
     const drive = await toAuth();
+
+    const folderIdUpload = '';
 
     server(`Client: ${clientName}`);
     console.log('Client:', clientName);
@@ -81,27 +95,33 @@ export const downloadFolder = async ({
       console.log('Não possui arquivos para serem baixados');
     } else {
       for await (const folder of filterFiles) {
-        server(`Project: ${folder.name}`);
-        console.log('Project: ', folder.name);
-        const res = await drive.files.list({
-          driveId,
-          corpora: 'drive',
-          includeItemsFromAllDrives: true,
-          supportsAllDrives: true,
-          supportsTeamDrives: true,
-          orderBy: 'name',
-          pageSize: 1000,
-          q: `'${folder.id}' in parents`,
-          fields: 'files(id, name, mimeType)',
+        let breakLoop = false;
+
+        // const clientUploadFolder = `${clientName}/${folder.name}/${imgs.name}/${version.name}`;
+
+        // Cliente pastas de fora;
+
+        let uploadFolder = `${clientName}`;
+
+        await toMove({
+          // drive,
+          driveUploadId,
+          file: folder,
+          folderIdUpload,
+          server,
+          uploadFolder,
+          onFinish: () => {
+            console.log(`Loop finalizado: ${folder.name}`);
+            breakLoop = true;
+          },
         });
 
-        const folderType = '07_VIDEO';
-        // const folderType = '06_IMAGENS';
+        if (!breakLoop) {
+          console.log(`Continuando o loop: ${folder.name}`);
 
-        const imgs = res.data.files.find((value) => value.name === folderType);
+          server(`Project: ${folder.name}`);
+          console.log('Project: ', folder.name);
 
-        if (imgs) {
-          console.log('Tipo de arquivo: ', imgs.name);
           const res = await drive.files.list({
             driveId,
             corpora: 'drive',
@@ -110,80 +130,115 @@ export const downloadFolder = async ({
             supportsTeamDrives: true,
             orderBy: 'name',
             pageSize: 1000,
-            q: `'${imgs.id}' in parents`,
+            q: `'${folder.id}' in parents`,
             fields: 'files(id, name, mimeType)',
           });
 
-          const versions = res.data.files.filter(
-            (value) => value.name !== '_MODELO',
-          );
+          // const folderType = '07_VIDEO';
 
-          for await (const version of versions) {
-            const versionQuery = `'${version.id}' in parents and mimeType = "video/mp4" and mimeType = "video/avi" and mimeType = "video/mov"`;
-            // const versionQuery = `'${version.id}' in parents and mimeType = "image/jpeg" or mimeType = "image/png"`;
+          const imgs = res.data.files;
 
-            console.log('Pasta de versão', version.name);
+          for (const img of imgs) {
+            if (imgs) {
+              uploadFolder = `${clientName}/${folder.name}`;
 
-            // await toWatch({ folderId: version.id, webhookUrl: '' });
+              await toMove({
+                // drive,
+                driveUploadId,
+                file: img,
+                folderIdUpload,
+                server,
+                uploadFolder,
+                onFinish: () => {
+                  console.log(`Loop finalizado: ${img.name}`);
+                  breakLoop = true;
+                },
+              });
 
-            const res = await drive.files.list({
-              driveId,
-              corpora: 'drive',
-              includeItemsFromAllDrives: true,
-              supportsAllDrives: true,
-              supportsTeamDrives: true,
-              orderBy: 'name',
-              pageSize: 1000,
-              q: versionQuery,
-              fields: 'files(id, name, mimeType)',
-            });
+              if (!breakLoop) {
+                console.log(`Continuando o loop: ${img.name}`);
 
-            const filesImages = res.data.files;
+                console.log('Tipo de arquivo: ', img.name);
 
-            if (filesImages.length === 0) {
-              console.log('Pasta vazia.');
-              server('Pasta vazia.');
-            } else {
-              for await (const image of filesImages) {
-                let folderIdUpload = '';
-                // const uploadFolder = `${driveName}/${clientName}/${folder.name}/${imgs.name}/${version.name}`;
-                const uploadFolder = `${clientName}/${folder.name}/${imgs.name}/${version.name}`;
+                const res = await drive.files.list({
+                  driveId,
+                  corpora: 'drive',
+                  includeItemsFromAllDrives: true,
+                  supportsAllDrives: true,
+                  supportsTeamDrives: true,
+                  orderBy: 'name',
+                  pageSize: 1000,
+                  q: `'${img.id}' in parents`,
+                  fields: 'files(id, name, mimeType)',
+                });
 
-                await downloadFile(image.id, './download', image.name)
-                  .then(() => {
-                    server(
-                      `Download concluído com sucesso do arquivo: ${image.name}`,
-                    );
-                    console.log('Download concluído com sucesso!');
-                  })
-                  .catch((error) => {
-                    server(
-                      `Ocorreu um erro durante o download do arquivo: ${image.name}`,
-                    );
-                    console.error('Ocorreu um erro durante o download:', error);
-                  });
+                const versions = res.data.files.filter(
+                  (value) => value.name !== '_MODELO',
+                );
 
-                await createFolderRecursive(driveUploadId, uploadFolder)
-                  .then((folderId) => {
-                    console.log('Pasta criada com sucesso. ID:', folderId);
-                    folderIdUpload = folderId;
-                  })
-                  .catch((error) => {
-                    console.error(
-                      'Ocorreu um erro ao criar a pasta:',
-                      error?.errors?.[0] ?? 'Não definido',
-                    );
+                for await (const version of versions) {
+                  const versionQuery = `'${version.id}' in parents`;
 
-                    toDelete(`./download/${image.name}`, image.name);
-                  });
+                  uploadFolder = `${clientName}/${folder.name}/${img.name}`;
 
-                if (folderIdUpload.length !== 0) {
-                  await toUpload({
+                  await toMove({
+                    // drive,
+                    driveUploadId,
+                    file: version,
+                    folderIdUpload,
                     server,
-                    fileName: image.name,
-                    folderId: folderIdUpload,
-                    filePath: `./download/${image.name}`,
+                    uploadFolder,
+                    onFinish: () => {
+                      console.log(`Loop finalizado: ${version.name}`);
+                      breakLoop = true;
+                    },
                   });
+
+                  if (!breakLoop) {
+                    console.log(`Continuando o loop: ${version.name}`);
+
+                    console.log('Pasta de versão', version.name);
+
+                    const res = await drive.files.list({
+                      driveId,
+                      corpora: 'drive',
+                      includeItemsFromAllDrives: true,
+                      supportsAllDrives: true,
+                      supportsTeamDrives: true,
+                      orderBy: 'name',
+                      pageSize: 1000,
+                      q: versionQuery,
+                      fields: 'files(id, name, mimeType, parents)',
+                    });
+
+                    const filterImages = (value: drive_v3.Schema$File) =>
+                      value.mimeType === 'video/x-msvideo' ||
+                      value.mimeType === 'video/mov' ||
+                      value.mimeType === 'video/mp4';
+
+                    const filesImages = res.data.files.filter(filterImages);
+
+                    if (filesImages.length === 0) {
+                      console.log('Pasta vazia.');
+                      server('Pasta vazia.');
+                    } else {
+                      for await (const image of filesImages) {
+                        uploadFolder = `${clientName}/${folder.name}/${img.name}/${version.name}`;
+
+                        await toMove({
+                          // drive,
+                          driveUploadId,
+                          folderIdUpload,
+                          file: image,
+                          server,
+                          uploadFolder,
+                          onFinish: () => {
+                            console.log(`Loop finalizado: ${image.name}`);
+                          },
+                        });
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -192,6 +247,8 @@ export const downloadFolder = async ({
       }
     }
   } catch (err) {
+    console.log('Download Error:', err);
+
     console.error('Ocorreu um erro', err?.errors?.[0]?.message);
   }
 };

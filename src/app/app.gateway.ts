@@ -9,8 +9,14 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { orchestrator } from 'src/orchestrator';
+import * as dotenv from 'dotenv';
+import { auth } from 'google-auth-library';
 
-@WebSocketGateway(8080, { cors: true })
+dotenv.config();
+
+const wsServer = Number(process.env.WS_SERVER ?? 8080);
+
+@WebSocketGateway(wsServer, { cors: true })
 export class AppGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
@@ -31,6 +37,7 @@ export class AppGateway
 
   async afterInit(server: any) {
     this.logger.log('Init');
+
     await orchestrator((value: string) =>
       this.server.emit('msgToClient', value),
     );
