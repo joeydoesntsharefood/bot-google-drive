@@ -39,34 +39,34 @@ export const orchestrator = async (server: any) => {
   );
   server('Rodando 2021');
 
-  for await (const folder of jobs) {
-    if (folder.name[0] !== '_') {
-      await downloadFolder({
-        server,
-        folderId: folder.id,
-        driveId: drivesList._JOBS_2022,
-        clientName: folder.name,
-        driveUploadId: uploadVideoId.one,
-      });
-    }
-  }
+  // for await (const folder of jobs) {
+  //   if (folder.name[0] !== '_') {
+  //     await downloadFolder({
+  //       server,
+  //       folderId: folder.id,
+  //       driveId: drivesList._JOBS_2022,
+  //       clientName: folder.name,
+  //       driveUploadId: uploadVideoId.one,
+  //     });
+  //   }
+  // }
 
   console.log(
     'Rodando 2022------------------------------------------------------------------------------------------',
   );
   server('Rodando 2022');
 
-  for await (const folder of jobsTwo) {
-    if (folder.name[0] !== '_') {
-      await downloadFolder({
-        server,
-        folderId: folder.id,
-        driveId: drivesList._JOBS_2022,
-        clientName: folder.name,
-        driveUploadId: uploadVideoId.two,
-      });
-    }
-  }
+  // for await (const folder of jobsTwo) {
+  //   if (folder.name[0] !== '_') {
+  //     await downloadFolder({
+  //       server,
+  //       folderId: folder.id,
+  //       driveId: drivesList._JOBS_2022,
+  //       clientName: folder.name,
+  //       driveUploadId: uploadVideoId.two,
+  //     });
+  //   }
+  // }
 
   console.log(
     'Rodando 2023------------------------------------------------------------------------------------------',
